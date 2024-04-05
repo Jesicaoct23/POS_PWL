@@ -1746,7 +1746,7 @@
         <div class="card-tools"></div>
     </div>
     <div class="card-body">
-        Selamat Datang semua, ini adalah halaman utama aplikasi ini yang dibuat oleh Izrar Akbar Munirza
+        Selamat Datang semua, ini adalah halaman utama aplikasi ini yang dibuat oleh Jesica
     </div>
 </div>
 @endsection
