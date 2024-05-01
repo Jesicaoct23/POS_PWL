@@ -12,7 +12,7 @@ class RegisterController extends Controller
     public function __invoke(Request $request)
     {
         //set validator
-        $Validator = Validator::make($request->all(), [
+        $validator = validator::make($request->all(), [
             'username' => 'required',
             'nama' => 'required',
             'password' => 'required|min:5|confirmed',
@@ -20,8 +20,8 @@ class RegisterController extends Controller
 
         ]);
         //if validator faild
-        if ($Validator->fails()) {
-            return response()->json($Validator->errors(), 422);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
         }
         //create user
         $user = UserModel::create([
