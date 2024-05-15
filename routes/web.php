@@ -146,3 +146,8 @@ Route::group(['middleware' => 'auth'], function () {
 // Route::put('/kategori/update/{id}',[KategoriController::class, 'update'])->name('kategori.update');
 // Route::get('/kategori/delete/{id}',[KategoriController::class, 'delete'])->name('kategori.delete');
 // Route::get('/kategori/create',[KategoriController::class, 'create'])->name('kategori.create');
+
+use App\Http\Controllers\FileUploadController;
+
+Route::get('/file-upload', [FileUploadController::class, 'fileUpload']);
+Route::post('/file-upload', [FileUploadController::class, 'prosesFileUpload']);
