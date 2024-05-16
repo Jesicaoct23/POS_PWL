@@ -12,7 +12,7 @@
                     <h5><i class="icon fas fa-ban"></i> Kesalahan!</h5> Data yang Anda cari tidak ditemukan.
                 </div>
             @else
-                <table class="table table-bordered table-striped table-hover table-sm">
+                <table class="table table-bordered table-striped table-hover tablesm">
                     <tr>
                         <th>ID</th>
                         <td>{{ $user->user_id }}</td>
@@ -33,9 +33,13 @@
                         <th>Password</th>
                         <td>********</td>
                     </tr>
+                    <tr>
+                        <th>Gambar User</th>
+                        <td><img src="{{ $user->image }}" alt="Gambar User" width="100"></td>
+                    </tr>
                 </table>
             @endempty
-            <a href="{{ url('user') }}" class="btn btn-sm btn-default mt- 2">Kembali</a>
+            <a href="{{ url('user') }}" class="btn btn-sm btn-default mt2">Kembali</a>
         </div>
     </div>
 @endsection

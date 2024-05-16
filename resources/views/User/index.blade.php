@@ -1,4 +1,3 @@
-
 @extends('layouts.template')
 
 @section('content')
@@ -16,13 +15,12 @@
             @if (session('error'))
                 <div class="alert alert-danger">{{ session('error') }}</div>
             @endif
-            {{-- JS7 praktikum 4 bagian 2 --}}
             <div class="row">
-                <div class="col-ms-12">
+                <div class="col-md-12">
                     <div class="form-group row">
-                        <label class="col-4 control-label col-form-label">Filter :</label>
-                        <div class="col-8">
-                            <select name="level_id" id="level_id" class="form-control" required>
+                        <label class="col-1 control-label col-form-label">Filter:</label>
+                        <div class="col-3">
+                            <select class="form-control" id="level_id" name='level_id' required>
                                 <option value="">- Semua -</option>
                                 @foreach ($level as $item)
                                     <option value="{{ $item->level_id }}">{{ $item->level_nama }}</option>
@@ -33,24 +31,25 @@
                     </div>
                 </div>
             </div>
-            {{--  --}}
             <table class="table table-bordered table-striped table-hover table-sm" id="table_user">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Username</th>
-                        <th>Nama</th>
-                        <th>Level Pengguna</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-            </table>
-        </div>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Nama</th>
+                    <th>Level Pengguna</th>
+                    <th>Gambar User</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+        </table>
     </div>
+</div>
 @endsection
 
 @push('css')
 @endpush
+
 @push('js')
     <script>
         $(document).ready(function() {
@@ -60,37 +59,48 @@
                     "url": "{{ url('user/list') }}",
                     "dataType": "json",
                     "type": "POST",
-                    "data": function(d) {
+                    "data": function (d) {
                         d.level_id = $('#level_id').val();
                     }
                 },
-                columns: [{
-                    data: "DT_RowIndex", // nomor urut dari laravel datatable addIndexColumn()
-                    className: "text-center",
-                    orderable: false,
-                    searchable: false
-                }, {
-                    data: "username",
-                    className: "",
-                    orderable: true, // orderable: true, jika ingin kolom ini bisa                     diurutkan
-                    searchable: true // searchable: true, jika ingin kolom ini bisa                    dicari
-                }, {
-                    data: "nama",
-                    className: "",
-                    orderable: true, // orderable: true, jika ingin kolom ini bisa                    diurutkan
-                    searchable: true // searchable: true, jika ingin kolom ini bisa                    dicari
-                }, {
-                    data: "level.level_nama",
-                    className: "",
-                    orderable: false, // orderable: true, jika ingin kolom ini bisa                    diurutkan
-                    searchable: false // searchable: true, jika ingin kolom ini bisa                    dicari
-                }, {
-                    data: "aksi",
-                    className: "",
-                    orderable: false, // orderable: true, jika ingin kolom ini bisa                    diurutkan
-                    searchable: false // searchable: true, jika ingin kolom ini bisa                    dicari
-                }]
+                columns: [
+                    {
+                        data: "DT_RowIndex", // nomor urut dari laravel datatable addIndexColumn()
+                        className: "text-center",
+                        orderable: false,
+                        searchable: false
+                    },{
+                        data: "username",
+                        className: "",
+                        orderable: true, // orderable: true, jika ingin kolom ini bisa diurutkan
+                        searchable: true // searchable: true, jika ingin kolom ini bisa dicari
+                    },{
+                        data: "nama",
+                        className: "",
+                        orderable: true, // orderable: true, jika ingin kolom ini bisa diurutkan
+                        searchable: true // searchable: true, jika ingin kolom ini bisa dicari
+                    },{
+                        data: "level.level_nama",
+                        className: "",
+                        orderable: false, // orderable: true, jika ingin kolom ini bisa diurutkan
+                        searchable: false // searchable: true, jika ingin kolom ini bisa dicari
+                    }, {
+                        data: "image",
+                        className: "",
+                        orderable: false,
+                        searchable: false,
+                        render: function(dataUser) {
+                            return '<img src="' + dataUser + '" alt="Image" class="img-thumbnail" width="100">';
+                        }
+                    }, {
+                        data: "aksi",
+                        className: "",
+                        orderable: false, // orderable: true, jika ingin kolom ini bisa diurutkan
+                        searchable: false // searchable: true, jika ingin kolom ini bisa dicari
+                    }
+                ]
             });
+
             $('#level_id').on('change', function() {
                 dataUser.ajax.reload();
             });
