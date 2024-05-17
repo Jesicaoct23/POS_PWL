@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-
 use App\Models\KategoriModel;
 use Illuminate\Http\Request;
 use App\Models\BarangModel;
@@ -26,10 +25,10 @@ class BarangController extends Controller
         return view('barang.index', ['breadcrumb' => $breadcrumb, 'page' => $page, 'kategori' => $kategori, 'activeMenu' => $activeMenu]);
     }
 
-    // Ambil data barang dalam bentuk json untuk datatables
+    // Ambil data barang dalam bentuk json untuk datatables 
     public function list(Request $request)
     {
-        $barangs = BarangModel::select('barang_id', 'kategori_id', 'barang_kode', 'barang_nama', 'harga_beli', 'harga_jual')->with('kategori');
+        $barangs = BarangModel::select('barang_id', 'kategori_id', 'barang_kode', 'barang_nama', 'harga_beli', 'harga_jual', 'image')->with('kategori');
 
         //Filter data barang berdasarkan level_id
         if ($request->kategori_id) {
@@ -64,32 +63,44 @@ class BarangController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'barang_kode' => 'required|string|max:10|unique:m_barang',
-            'barang_nama' => 'required|string|max:100|unique:m_barang,barang_nama',
-            'harga_beli' => 'required|integer',
-            'harga_jual' => 'required|integer',
-            'kategori_id' => 'required|integer'
-        ]);
+{
+    // Validate the request inputs
+    $request->validate([
+        'barang_kode' => 'required|string|max:10',
+        'barang_nama' => 'required|string|max:100|unique:m_barang,barang_nama',
+        'harga_beli' => 'required|integer',
+        'harga_jual' => 'required|integer',
+        'kategori_id' => 'required|integer',
+        'image' => 'required|image', // Validate image type and size
+    ]);
+
+    $extfile = $request->image->getClientOriginalName();
+        $namaFile = 'web-' . time() . "." . $extfile;
+
+        $path = $request->image->move('gbrStarterCode', $namaFile);
+        $path = str_replace("\\", "//", $path);
+        $pathBaru = asset('gbrStarterCode/' . $namaFile);
 
         BarangModel::create([
-            'barang_kode' => $request->barang_kode,
-            'barang_nama' => $request->barang_nama,
-            'harga_jual' => $request->harga_jual,
-            'harga_beli' => $request->harga_beli,
-            'kategori_id' => $request->kategori_id
+            'kategori_id'   => $request->kategori_id,
+            'barang_kode'   => $request->barang_kode,
+            'barang_nama'   => $request->barang_nama, 
+            'harga_beli'    => $request->harga_beli,
+            'harga_jual'    => $request->harga_jual,
+            'image'         => $pathBaru
         ]);
-        return redirect('/barang')->with('success', 'Data barang berhasil disimpan');
-    }
 
-    public function show(string $id)
+        return redirect('/barang')->with('success', 'Data barang berhasil ditambahkan');
+}
+
+
+    public function show(String $id)
     {
-        $barang = BarangModel::find($id);
+        $barang = BarangModel::with('kategori')->find($id);
 
         $breadcrumb = (object) [
             'title' => 'Detail Barang',
-            'list' => ['Home', 'Barang', 'Detail']
+            'list'  => ['Home', 'Barang', 'Detail']
         ];
 
         $page = (object) [
@@ -101,21 +112,21 @@ class BarangController extends Controller
             'barang.show',
             [
                 'breadcrumb' => $breadcrumb,
-                'page' => $page,
-                'barang' => $barang,
+                'page'       => $page,
+                'barang'       => $barang,
                 'activeMenu' => $activeMenu
             ]
         );
     }
 
-    public function edit(string $id)
+    public function edit(String $id)
     {
         $barang = BarangModel::find($id);
         $kategori = KategoriModel::all();
 
         $breadcrumb = (object) [
             'title' => 'Edit Barang',
-            'list' => ['Home', 'Barang', 'Edit']
+            'list'  => ['Home', 'Barang', 'Edit']
         ];
 
         $page = (object) [
@@ -138,19 +149,26 @@ class BarangController extends Controller
         $request->validate([
             'barang_kode' => 'required|string|max:10',
             'barang_nama' => 'required|string|max:100|unique:m_barang,barang_nama',
-            'harga_beli' => 'required|integer',
-            'harga_jual' => 'required|integer',
-            'kategori_id' => 'required|integer'
+            'harga_beli'     => 'required|integer',
+            'harga_jual'     => 'required|integer',
+            'kategori_id' => 'required|integer',
+            'image' => 'required|file|image'
         ]);
+        $extfile = $request->image->getClientOriginalName();
+        $namaFile = 'web-' . time() . "." . $extfile;
+
+        $path = $request->image->move('gbrStarterCode', $namaFile);
+        $path = str_replace("\\", "//", $path);
+        $pathBaru = asset('gbrStarterCode/' . $namaFile);
 
         BarangModel::find($id)->update([
-            'barang_kode' => $request->barang_kode,
-            'barang_nama' => $request->barang_nama,
-            'harga_jual' => $request->harga_jual,
-            'harga_beli' => $request->harga_beli,
-            'kategori_id' => $request->kategori_id
+            'kategori_id'   => $request->kategori_id,
+            'barang_kode'   => $request->barang_kode,
+            'barang_nama'   => $request->barang_nama, 
+            'harga_beli'    => $request->harga_beli,
+            'harga_jual'    => $request->harga_jual,
+            'image'         => $pathBaru
         ]);
-
         return redirect('/barang')->with('success', 'Data barang berhasil diubah');
     }
 
@@ -172,4 +190,26 @@ class BarangController extends Controller
             return redirect('/barang')->with('error', 'Data barang gagal dihapus karena masih terdapat tabel lain yang terkai dengan data ini');
         }
     }
+
+    public function fileUpload()
+    {
+        return view('barang.create');
+    }
+
+    public function prosesFileUpload(Request $request)
+{
+    $request->validate([
+        'berkas' => 'required|file|image|max:500', // Validasi file gambar
+        'image_name' => 'required|string', // Validasi inputan nama file
+    ]);
+
+    // Menyimpan file dengan nama yang sama seperti aslinya
+    $path = $request->berkas->move('gambar');
+
+    // Menampilkan informasi dan link file yang diunggah
+    echo "Gambar berhasil diupload ke <a href='$path' target='_blank'>" . $request->berkas->getClientOriginalName() . "</a>"; // Menambahkan link ke gambar
+    echo "<br> <br>";
+    echo "Tampilkan gambar: <br> <img src='$path'>";
+}
+
 }
